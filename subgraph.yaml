@@ -1,27 +1,77 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 description: Gravatar for Ethereum
 repository: https://github.com/graphprotocol/example-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: Gravity
-    network: mainnet
+    name: Users
+    network: rinkeby
     source:
-      address: '0x2E645469f354BB4F5c8a05B3b30A929361cf77eC'
-      abi: Gravity
+      address: '0xBa80e4658c250c0E385c1D1C4E164cd6A5Dc9292'
+      startBlock: 11151305
+      abi: Users
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - Gravatar
+        - User
       abis:
-        - name: Gravity
-          file: ./abis/Gravity.json
+        - name: Users
+          file: ./abis/Users.json
       eventHandlers:
-        - event: NewGravatar(uint256,address,string,string)
-          handler: handleNewGravatar
-        - event: UpdatedGravatar(uint256,address,string,string)
-          handler: handleUpdatedGravatar
+        - event: updatedBio(address,string)
+          handler: handleUpdatedBio
       file: ./src/mapping.ts
+  - kind: ethereum/contract
+    name: PropertyRegistry
+    network: rinkeby
+    source:
+      address: '0x23a433BdE93bbC2DEA081646Ecdb6FbcecE43a4c'
+      startBlock: 11151761
+      abi: PropertyRegistry
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Property
+        - User
+      abis:
+        - name: PropertyRegistry
+          file: ./abis/PropertyRegistry.json
+      eventHandlers:
+        - event: propertyRegistered(address,address,uint256,uint256)
+          handler: handlePropertyRegistered
+      file: ./src/mappingPropertyRegistry.ts
+  - kind: ethereum/contract
+    name: Property
+    network: rinkeby
+    source:
+      startBlock: 11151761
+      abi: Property
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Property
+        - User
+      abis:
+        - name: Property
+          file: ./abis/Property.json
+      eventHandlers:
+        - event: propertyRentSet(address,uint256,uint256)
+          handler: handleRentSet
+        - event: updatedInterestedRenter(address,address,uint256)
+          handler: handleInterestedRenterUpdate
+        - event: approvedInterested(address,address)
+          handler: handleInterestedApproved
+        - event: acceptedAgreement(address,address)
+          handler: handleAcceptAgreement
+        - event: paidRent(address,address,uint256)
+          handler: handlePaidRent
+        - event: paidRentFromSecurity(address,address,uint256)
+          handler: handlePaidRentFromSecurity
+      file: ./src/mappingProperty.ts

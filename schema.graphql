@@ -1,6 +1,41 @@
-type Gravatar @entity {
+type Bio @entity {
   id: ID!
+  key: String
+  value: String
+}
+
+type User @entity {
+  id: ID!
+  # address: Bytes!
+  bio: [Bio!]
+}
+
+type InterestedTenant @entity {
+  id: ID!
+  user: User!
+  property: Property!
+  time: Int!
+}
+
+type Property @entity {
+  id: ID!
+  # address: Bytes!
   owner: Bytes!
-  displayName: String!
-  imageUrl: String!
+  x: Int!
+  y: Int!
+
+  rent: String
+  security: Int
+
+  currentTenant: User
+  approvedTenant: User
+  InterestedTenant: [InterestedTenant!]
+}
+
+type RentPayment @entity {
+  id: ID!
+  user: User!
+  property: Property!
+  fromSecurity: Boolean!
+  amount: String!
 }
